@@ -1,0 +1,12 @@
+{
+    "id": "featureB",
+    "version": "0.0.1",
+    "name": "Feature B",
+    "containerEnv": {
+        "CONTAINER_ENV_A": "featureB"
+    },
+    "onCreateCommand": "echo 'featureB' > /tmp/featureB.txt",
+    "customizations": {
+        "source": "featureB"
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "name": "Feature Base",
+    "id": "featureBase",
+    "version": "0.0.1",
+    "containerEnv": {
+        "CONTAINER_ENV_A": "featureBase"
+    },
+    "customizations": {
+        "source": "featureBase"
+    }
+}

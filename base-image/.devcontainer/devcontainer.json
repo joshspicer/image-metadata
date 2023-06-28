@@ -1,0 +1,13 @@
+{
+    "image": "debian:12",
+    "containerEnv": {
+        "CONTAINER_ENV_A": "base",
+        "CONTAINER_ENV_B": "base"
+    },
+    "onCreateCommand": "echo 'base' > /tmp/base.txt",
+    "customizations": {
+        "source": "base"
+    },
+    "features": {
+        "./featureBase": {}
+}
