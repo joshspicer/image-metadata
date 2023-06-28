@@ -14,12 +14,18 @@ then
     DEVCONTAINER_PROGRAM='./devcontainer.js'
 fi
 
-# Get path of where this script exists
-SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-
 function msg() {
     echo -e "${BOLD_RED}--- $1 ---${NC}"
 }
+
+function clean_up {
+    msg "Cleanup"
+    # Remove all containers with label EXAMPLE=true
+    docker ps -a -q --filter label=EXAMPLE=true | xargs -r docker rm -f
+}
+
+# Get path of where this script exists
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 msg "Building 'base-image'"
 $DEVCONTAINER_PROGRAM build --no-cache --image-name base-image --workspace-folder "$SCRIPT_PATH/base-image"
@@ -35,7 +41,7 @@ docker inspect example-project | jq .[].Config.Labels | jq ".[\"devcontainer.met
 
 msg "Run 'example-project'"
 
-result=$($DEVCONTAINER_PROGRAM up --workspace-folder "$SCRIPT_PATH/example-project" --cache-from example-project)
+result=$($DEVCONTAINER_PROGRAM up --workspace-folder "$SCRIPT_PATH/example-project" --cache-from example-project --id-label EXAMPLE=true)
 containerId=$(echo $result | jq .containerId -r)
 
 msg "Container metadata for 'example-project'"
@@ -43,3 +49,5 @@ docker inspect $containerId | jq .[].Config.Labels | jq ".[\"devcontainer.metada
 
 msg "devcontainer read-configuration (merged)"
 $DEVCONTAINER_PROGRAM read-configuration --include-merged-configuration --workspace-folder "$SCRIPT_PATH/example-project" | jq .mergedConfiguration
+
+clean_up
