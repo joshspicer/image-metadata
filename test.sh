@@ -11,7 +11,7 @@ if ! command -v $DEVCONTAINER_PROGRAM &> /dev/null
 then
     # Assume local dev
     # Clone into /workspaces in a Codespace
-    DEVCONTAINER_PROGRAM='./devcontainer'
+    DEVCONTAINER_PROGRAM='./devcontainer.js'
 fi
 
 # Get path of where this script exists
