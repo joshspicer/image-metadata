@@ -1,14 +1,14 @@
 {
     "image": "base-image",
     "containerEnv": {
-        "CONTAINER_ENV_A": "devcontainer"
+        "CONTAINER_ENV_A": "user-devcontainer"
     },
     "features": {
         "./featureA": {},
         "./featureB": {}
     },
-    "onCreateCommand": "echo 'devcontainer' > /tmp/devcontainer.txt",
+    "onCreateCommand": "echo 'user-devcontainer' > /tmp/user-devcontainer.txt",
     "customizations": {
-        "source": "devcontainer"
+        "source": "user-devcontainer"
     }
 }
