@@ -14,6 +14,20 @@ then
     DEVCONTAINER_PROGRAM='./devcontainer.js'
 fi
 
+# If --all is passed to this script, then we'll show all the configuration
+# Otherwise, we'll just show the configuration we care about
+if [ "$1" == "--all" ]; then
+    CONTAINER_INSPECT_SHOW_ALL=true
+    READ_CONFIGURATION_FILTER='.'
+else
+    READ_CONFIGURATION_FILTER='.mergedConfiguration'
+fi
+
+if [ "$1" == "--no-cleanup" ]; then
+    NO_CLEANUP=true
+fi
+
+
 function msg() {
     echo -e "${BOLD_RED}--- $1 ---${NC}"
 }
@@ -44,10 +58,20 @@ msg "Run 'example-project'"
 result=$($DEVCONTAINER_PROGRAM up --workspace-folder "$SCRIPT_PATH/example-project" --cache-from example-project --id-label EXAMPLE=true)
 containerId=$(echo $result | jq .containerId -r)
 
-msg "Container metadata for 'example-project'"
-docker inspect $containerId | jq .[].Config.Labels | jq ".[\"devcontainer.metadata\"]" -r | jq
+msg 'Export env from "example-project"'
+$DEVCONTAINER_PROGRAM exec --id-label EXAMPLE=true env
 
-msg "devcontainer read-configuration (merged)"
-$DEVCONTAINER_PROGRAM read-configuration --include-merged-configuration --workspace-folder "$SCRIPT_PATH/example-project" | jq .mergedConfiguration
+msg "Container metadata for 'example-project')"
 
-clean_up
+if [ -z "$CONTAINER_INSPECT_SHOW_ALL" ]; then
+    docker inspect $containerId | jq .[].Config.Labels | jq ".[\"devcontainer.metadata\"]" -r | jq
+else
+    docker inspect $containerId | jq
+fi
+
+msg "devcontainer read-configuration ($READ_CONFIGURATION_FILTER)"
+$DEVCONTAINER_PROGRAM read-configuration --include-merged-configuration --workspace-folder "$SCRIPT_PATH/example-project" | jq $READ_CONFIGURATION_FILTER
+
+if [ -z "$NO_CLEANUP" ]; then
+    clean_up
+fi
